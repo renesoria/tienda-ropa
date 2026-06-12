@@ -29,10 +29,22 @@ export async function login(
       }
     );
     return response.data;
-  } catch (error) {
-    return {
-      success: false,
-      message: "Error de conexión"
-    };
+  } catch {
+    // Backend no disponible — verificar contra usuarios predefinidos (Opción A)
+    const USUARIOS_DEMO = [
+      { id: 1, usuario: "admin",   password: "123456", rol: "Administrador" as const },
+      { id: 2, usuario: "cliente", password: "123456", rol: "Usuario"        as const },
+    ];
+    const encontrado = USUARIOS_DEMO.find(
+      (u) => u.usuario === usuario && u.password === password
+    );
+    if (encontrado) {
+      return {
+        success: true,
+        message: "Login correcto",
+        user: { id: encontrado.id, usuario: encontrado.usuario, rol: encontrado.rol },
+      };
+    }
+    return { success: false, message: "Credenciales incorrectas." };
   }
 }
